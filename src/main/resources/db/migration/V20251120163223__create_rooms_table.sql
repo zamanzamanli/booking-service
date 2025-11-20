@@ -9,4 +9,3 @@ CREATE TRIGGER rooms_trg_set_updated_at
 BEFORE UPDATE ON booking.rooms
 FOR EACH ROW
 EXECUTE FUNCTION public.set_updated_at();
-
