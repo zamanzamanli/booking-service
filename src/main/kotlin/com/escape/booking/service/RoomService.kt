@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class RoomService(
-    val roomRepository: RoomRepository,
+    private val roomRepository: RoomRepository,
 ) {
 
     fun listRooms(): List<Room> {

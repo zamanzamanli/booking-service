@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/rooms")
 class RoomController(
-    val roomService: RoomService,
+    private val roomService: RoomService,
 ) {
     @GetMapping
     fun listRooms(): ListRoomsResponse {
@@ -32,16 +32,16 @@ class RoomController(
         return roomService.createRoom(createRoomRequest)
     }
 
-    @PutMapping("/{roomId}")
+    @PutMapping("/{id}")
     fun updateRoom(
-        @PathVariable roomId: Long,
+        @PathVariable id: Long,
         @RequestBody @Valid updateRoomRequest: UpdateRoomRequest
     ): Room {
-        return roomService.updateRoom(roomId,updateRoomRequest)
+        return roomService.updateRoom(id,updateRoomRequest)
     }
 
-    @GetMapping("/{roomId}")
-    fun getRoom(@PathVariable roomId: Long): Room {
-        return roomService.getRoom(roomId)
+    @GetMapping("/{id}")
+    fun getRoom(@PathVariable id: Long): Room {
+        return roomService.getRoom(id)
     }
 }
