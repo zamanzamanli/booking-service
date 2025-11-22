@@ -28,7 +28,7 @@ class ReservationService(
         // If the same reservation already exists, then return it
         val existingReservation = reservationRepository.findFirstByTimeSlotIdAndUserId(timeSlotId,userId)
         existingReservation?.let {
-            if (it.status in setOf(ReservationStatus.HOLD,ReservationStatus.CANCELED)) {
+            if (it.status in setOf(ReservationStatus.HOLD,ReservationStatus.CONFIRMED)) {
                 return it.toDto() to false
             }
         }
