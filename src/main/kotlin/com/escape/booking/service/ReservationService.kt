@@ -21,16 +21,18 @@ class ReservationService(
     private val reservationRepository: ReservationRepository
 ) {
 
+    companion object {
+        val ACTIVE_STATUSES = setOf(ReservationStatus.HOLD,ReservationStatus.CONFIRMED)
+    }
+
     @Transactional
     fun reserve(userId: UUID,createReservationRequest: CreateReservationRequest): Pair<Reservation,Boolean> {
         val timeSlotId = createReservationRequest.timeSlotId
 
         // If the same reservation already exists, then return it
-        val existingReservation = reservationRepository.findFirstByTimeSlotIdAndUserId(timeSlotId,userId)
+        val existingReservation = reservationRepository.findFirstByTimeSlotIdAndUserIdAndStatusIn(timeSlotId,userId,ACTIVE_STATUSES.toList())
         existingReservation?.let {
-            if (it.status in setOf(ReservationStatus.HOLD,ReservationStatus.CONFIRMED)) {
-                return it.toDto() to false
-            }
+            return it.toDto() to false
         }
 
         verifyTimeSlotExists(timeSlotId)
@@ -56,6 +58,10 @@ class ReservationService(
     @Transactional
     fun cancel(userId: UUID,reservationId: Long): Reservation {
         return changeStatusTo(userId,reservationId,ReservationStatus.CANCELED)
+    }
+
+    fun getReservation(userId: UUID,reservationId: Long): Reservation {
+        return getReservationEntityOrThrowNotFound(userId,reservationId).toDto()
     }
 
     private fun getReservationEntityOrThrowNotFound(userId: UUID,reservationId: Long): ReservationEntity {

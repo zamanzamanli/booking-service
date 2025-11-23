@@ -1,6 +1,7 @@
 package com.escape.booking.repository
 
 import com.escape.booking.entity.ReservationEntity
+import com.escape.booking.model.ReservationStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Modifying
@@ -13,8 +14,8 @@ import java.util.UUID
 interface ReservationRepository :
     JpaRepository<ReservationEntity,Long>,
     JpaSpecificationExecutor<ReservationEntity> {
-    fun findFirstByTimeSlotIdAndUserId(timeSlotId: Long,userId: UUID): ReservationEntity?
     fun findFirstByUserIdAndId(userId: UUID,id: Long): ReservationEntity?
+    fun findFirstByTimeSlotIdAndUserIdAndStatusIn(timeSlotId: Long,userId: UUID,statuses: List<ReservationStatus>): ReservationEntity?
 
     @Modifying(clearAutomatically = true,flushAutomatically = true)
     @Query(

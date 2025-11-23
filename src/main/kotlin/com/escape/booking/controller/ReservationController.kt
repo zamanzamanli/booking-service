@@ -6,6 +6,7 @@ import com.escape.booking.service.ReservationService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -34,7 +35,7 @@ class ReservationController(
         return ResponseEntity.ok(result.first)
     }
 
-    @PostMapping("/{id}:confirm")
+    @PostMapping("/{id}/confirm")
     fun confirmReservation(
         @RequestHeader("X-User-Id") userId: UUID,
         @PathVariable("id") reservationId: Long
@@ -42,11 +43,19 @@ class ReservationController(
         return reservationService.confirm(userId,reservationId)
     }
 
-    @PostMapping("/{id}:cancel")
+    @PostMapping("/{id}/cancel")
     fun cancelReservation(
         @RequestHeader("X-User-Id") userId: UUID,
         @PathVariable("id") reservationId: Long
     ): Reservation {
         return reservationService.cancel(userId,reservationId)
+    }
+
+    @GetMapping("/{id}")
+    fun getReservation(
+        @RequestHeader("X-User-Id") userId: UUID,
+        @PathVariable("id") reservationId: Long
+    ): Reservation {
+        return reservationService.getReservation(userId,reservationId)
     }
 }

@@ -36,7 +36,7 @@ class RoomTimeSlotController(
         return timeSlotService.createTimeSlot(roomId,body)
     }
 
-    @PostMapping(":bulk")
+    @PostMapping("/bulk")
     fun createBulkTimeSlots(
         @PathVariable roomId: Long,
         @RequestBody bulkCreateTimeSlotsRequest: BulkCreateTimeSlotsRequest
