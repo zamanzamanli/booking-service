@@ -34,4 +34,16 @@ interface ReservationRepository :
         @Param("status") status: String,
         @Param("newStatus") newStatus: String
     ): Int
+
+    @Modifying(clearAutomatically = true,flushAutomatically = true)
+    @Query(
+        """
+        UPDATE booking.reservations
+           SET status = 'EXPIRED'
+         WHERE status = 'HOLD'
+           AND created_at <= now() - (?1 * interval '1 second')
+        """,
+        nativeQuery = true
+    )
+    fun releaseExpiredHolds(seconds: Long): Int
 }
