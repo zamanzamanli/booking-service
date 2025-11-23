@@ -18,9 +18,13 @@ class TimeSlotService(
     private val timeSlotRepository: TimeSlotRepository,
 ) {
 
-    fun listTimeSlots(roomId: Long): List<TimeSlot> {
+    fun listTimeSlots(roomId: Long,availableOnly: Boolean): List<TimeSlot> {
         validateRoomExists(roomId)
-        val timeSlots = timeSlotRepository.findByRoomId(roomId)
+        val timeSlots = if (availableOnly) {
+            timeSlotRepository.findAvailableByRoomId(roomId)
+        } else {
+            timeSlotRepository.findByRoomId(roomId)
+        }
         return timeSlots.map { it.toDto() }
     }
 

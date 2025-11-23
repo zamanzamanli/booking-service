@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
@@ -22,8 +23,11 @@ class RoomTimeSlotController(
 ) {
 
     @GetMapping
-    fun listTimeSlots(@PathVariable("roomId") roomId: Long): ListTimeSlotsResponse {
-        val timeSlots = timeSlotService.listTimeSlots(roomId)
+    fun listTimeSlots(
+        @PathVariable("roomId") roomId: Long,
+        @RequestParam(value = "availableOnly",required = false,defaultValue = "false") availableOnly: Boolean
+    ): ListTimeSlotsResponse {
+        val timeSlots = timeSlotService.listTimeSlots(roomId,availableOnly)
         return ListTimeSlotsResponse(timeSlots = timeSlots)
     }
 
