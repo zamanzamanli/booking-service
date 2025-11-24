@@ -1,8 +1,25 @@
 # Quick Test Reference Guide
 
+## 🚀 Quick Start
+
+### Using Docker (No Java/Maven Required!)
+```bash
+# Easy way: Use the convenience script (includes auto-cleanup)
+./test-docker.sh -Dtest=ReservationIntegrationTests
+
+# Manual way: Direct docker-compose
+docker-compose --profile test run --rm test ./mvnw test -Dtest=ReservationIntegrationTests
+```
+
+### Alternative: With Java/Maven Installed Locally
+```bash
+mvn test -Dtest=ReservationIntegrationTests
+```
+
+---
+
 ## Run All Reservation Tests
 ```bash
-cd /Users/zzamanli/personal/code/booking-service
 mvn test -Dtest=ReservationIntegrationTests
 ```
 
@@ -10,6 +27,10 @@ mvn test -Dtest=ReservationIntegrationTests
 
 ### Test 1: Expiration Mechanism
 ```bash
+# With Docker
+./test-docker.sh -Dtest=ReservationIntegrationTests#"should expire reservations after hold time"
+
+# Or with local Maven
 mvn test -Dtest=ReservationIntegrationTests#"should expire reservations after hold time"
 ```
 **What it tests:** Verifies that reservations properly expire after the hold time.
@@ -92,6 +113,24 @@ Error: No EntityManager with actual transaction available
 ```
 **Solution:** This has been fixed by using the `expireHoldsInTransaction()` helper method with `TransactionTemplate`. This error occurs when calling `@Modifying` repository methods outside a transaction context. The helper method uses Spring's `TransactionTemplate` to properly wrap the call in a transaction.
 
+### Docker-based testing - Ryuk warnings (Safe to Ignore)
+```
+WARN Can not connect to Ryuk at 172.17.0.1:xxxxx
+```
+**This is expected and harmless!** Ryuk is disabled when running tests in Docker on macOS due to networking limitations. Tests will still run successfully. Ryuk is just a cleanup utility - you'll need to manually clean up test containers after tests complete:
+```bash
+docker ps -a | grep testcontainers | awk '{print $1}' | xargs docker rm -f
+```
+
+### Docker not accessible
+If tests fail to start containers, ensure Docker is running:
+```bash
+docker ps  # Should show running containers without error
+```
+
+### Database connection refused (localhost:5432)
+This was fixed by adding Testcontainers to `BookingServiceApplicationTests`. All tests now properly spin up PostgreSQL containers instead of trying to connect to localhost.
+
 ## Test Execution Time
 
 - Full test suite: ~15-30 seconds (includes Docker container startup)
@@ -106,4 +145,3 @@ The tests cover:
 - ✅ Transaction isolation (optimistic locking)
 - ✅ API error handling
 - ✅ Status transitions
-

@@ -37,8 +37,32 @@ services:
     networks:
       - booking-network
 
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: booking-service-test
+    profiles:
+      - test
+    environment:
+      # Testcontainers configuration for Docker-in-Docker (macOS compatible)
+      TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
+      TESTCONTAINERS_RYUK_DISABLED: "true"  # Disable Ryuk on macOS due to networking
+      TESTCONTAINERS_CHECKS_DISABLE: "true"
+      DOCKER_HOST: unix:///var/run/docker.sock
+      # For macOS Docker Desktop
+      TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
+    volumes:
+      - .:/app
+      - maven-cache:/root/.m2
+      - /var/run/docker.sock:/var/run/docker.sock
+    working_dir: /app
+    # Override command for specific tests
+    # command: ["./mvnw", "test", "-Dtest=ReservationIntegrationTests"]
+
 volumes:
   postgres_data:
+  maven-cache:
 
 networks:
   booking-network:

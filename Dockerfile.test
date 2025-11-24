@@ -1,0 +1,21 @@
+# Dockerfile specifically for running tests
+# This allows running tests without installing Java or Maven locally
+
+FROM eclipse-temurin:21-jdk-alpine
+
+WORKDIR /app
+
+# Copy maven wrapper and dependencies
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+
+# Download dependencies first (cached layer)
+RUN ./mvnw dependency:go-offline -DskipTests
+
+# Copy source code
+COPY src src
+
+# Default command runs all tests
+# Override with docker run command to run specific tests
+CMD ["./mvnw", "test"]
